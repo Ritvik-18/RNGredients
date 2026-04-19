@@ -28,7 +28,7 @@ When it came time to sell the vision, Claude's design capabilities were used to 
 > [!NOTE]
 > GitHub strips out `<iframe>` tags from READMEs for security reasons, and clicking the HTML file directly in the repo will only show the raw code.
 
-**👉 [Click here to view the fully rendered, interactive Pitch Deck!](https://htmlpreview.github.io/?https://github.com/Ritvik-18/RNGredients/blob/master/RNGredients%20Pitch.html) 👈**
+**👉 [Click here to view the fully rendered, from Claude Design!](https://htmlpreview.github.io/?https://github.com/Ritvik-18/RNGredients/blob/master/RNGredients%20Pitch.html) 👈**
 
 *(Powered by HTMLPreview to render the presentation directly in your browser)*
 
