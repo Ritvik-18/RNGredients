@@ -106,12 +106,19 @@ export function QuestLogPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
             >
-              <RecipeCard
-                recipe={q.recipe}
-                slot={q.slot}
-                calorieTarget={q.calorie_target}
-                missing={missing_materials}
-              />
+              {q.recipe ? (
+                <RecipeCard
+                  recipe={q.recipe}
+                  slot={q.slot}
+                  calorieTarget={q.calorie_target}
+                  missing={missing_materials}
+                />
+              ) : (
+                <div className="pixel-border rounded-sm p-4 text-center" style={{ background: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}>
+                  <div className="font-vt323 text-lg">{q.slot}</div>
+                  <div className="font-pixel mt-1" style={{ fontSize: '8px' }}>NO RECIPE ROLLED</div>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>

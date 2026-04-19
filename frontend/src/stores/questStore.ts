@@ -74,8 +74,7 @@ export const useQuestStore = create<QuestStore>()(
         if (!slot) return null;
 
         const excludeIds = log.quests
-          .filter(q => q.slot !== slotKey && q.recipe?.id)
-          .map(q => q.recipe.id);
+          .flatMap(q => (q.slot !== slotKey && q.recipe) ? [q.recipe.id] : []);
 
         const rolled = rollSingleMeal(recipes, player, inventory, slot, excludeIds);
         if (!rolled) return null;
@@ -85,21 +84,23 @@ export const useQuestStore = create<QuestStore>()(
         );
 
         const total_buffs = newQuests
-          .filter(q => q.status !== 'pending' && q.recipe)
-          .reduce((acc, q) => ({
-            calories: acc.calories + q.recipe.stat_buffs.calories,
-            protein:  acc.protein  + q.recipe.stat_buffs.protein,
-            carbs:    acc.carbs    + q.recipe.stat_buffs.carbs,
-            fat:      acc.fat      + q.recipe.stat_buffs.fat,
-          }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+          .reduce((acc, q) => {
+            if (q.status === 'pending' || !q.recipe) return acc;
+            return {
+              calories: acc.calories + q.recipe.stat_buffs.calories,
+              protein:  acc.protein  + q.recipe.stat_buffs.protein,
+              carbs:    acc.carbs    + q.recipe.stat_buffs.carbs,
+              fat:      acc.fat      + q.recipe.stat_buffs.fat,
+            };
+          }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
 
         const rolledQuests = newQuests.filter(q => q.status !== 'pending' && q.recipe);
-        const allReq = new Set(rolledQuests.flatMap(q => q.recipe.required_materials.map(m => m.id)));
+        const allReq = new Set(rolledQuests.flatMap(q => q.recipe ? q.recipe.required_materials.map(m => m.id) : []));
         const invIds = new Set(inventory.map(i => i.ingredient_id).filter(Boolean) as string[]);
         const missing_materials = [...allReq]
           .filter(id => !invIds.has(id))
           .map(id => {
-            const mat = rolledQuests.flatMap(q => q.recipe.required_materials).find(m => m.id === id);
+            const mat = rolledQuests.flatMap(q => q.recipe ? q.recipe.required_materials : []).find(m => m.id === id);
             return mat?.common_name ?? id;
           });
 

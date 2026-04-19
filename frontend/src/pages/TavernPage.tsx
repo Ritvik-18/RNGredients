@@ -24,7 +24,7 @@ const cuisineEmoji: Record<string, string> = {
 };
 
 function getSymbol(slot: QuestSlot | undefined) {
-  if (!slot) return '🎲';
+  if (!slot || !slot.recipe) return '🎲';
   return cuisineEmoji[slot.recipe.cuisine_type] ?? '🍽️';
 }
 
@@ -198,7 +198,7 @@ export function TavernPage() {
         });
 
         Sound.transition();
-        setFlashRarity(quest.recipe.rarity);
+        setFlashRarity(quest.recipe?.rarity ?? null);
         setTimeout(() => setFlashRarity(null), 1200);
 
         // All settled → done
@@ -310,21 +310,23 @@ export function TavernPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.08, type: 'spring', stiffness: 80, damping: 15 }}
                 >
-                  <span className="text-2xl">{cuisineEmoji[q.recipe.cuisine_type] ?? '🍽️'}</span>
+                  <span className="text-2xl">{q.recipe ? cuisineEmoji[q.recipe.cuisine_type] ?? '🍽️' : '🍽️'}</span>
                   <div className="flex-1 min-w-0">
                     <div className="font-pixel truncate" style={{ fontSize: '8px', color: 'var(--text-primary)' }}>
-                      {q.recipe.title}
+                      {q.recipe?.title ?? 'No Recipe Found'}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <RarityChip rarity={q.recipe.rarity} />
+                      {q.recipe && <RarityChip rarity={q.recipe.rarity} />}
                       <span className="font-vt323 text-sm" style={{ color: 'var(--text-secondary)' }}>
                         {q.slot}
                       </span>
                     </div>
                   </div>
-                  <div className="font-vt323 text-lg" style={{ color: 'var(--success)' }}>
-                    +{q.recipe.stat_buffs.calories}HP
-                  </div>
+                  {q.recipe && (
+                    <div className="font-vt323 text-lg" style={{ color: 'var(--success)' }}>
+                      +{q.recipe.stat_buffs.calories}HP
+                    </div>
+                  )}
                 </motion.div>
               ))}
 

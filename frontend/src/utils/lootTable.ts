@@ -334,22 +334,25 @@ export function rollMeals(
   }
 
   const total_buffs = selected.reduce(
-    (acc, q) => ({
-      calories: acc.calories + q.recipe.stat_buffs.calories,
-      protein:  acc.protein  + q.recipe.stat_buffs.protein,
-      carbs:    acc.carbs    + q.recipe.stat_buffs.carbs,
-      fat:      acc.fat      + q.recipe.stat_buffs.fat,
-    }),
+    (acc, q) => {
+      if (!q.recipe) return acc;
+      return {
+        calories: acc.calories + q.recipe.stat_buffs.calories,
+        protein:  acc.protein  + q.recipe.stat_buffs.protein,
+        carbs:    acc.carbs    + q.recipe.stat_buffs.carbs,
+        fat:      acc.fat      + q.recipe.stat_buffs.fat,
+      };
+    },
     { calories: 0, protein: 0, carbs: 0, fat: 0 },
   );
 
-  const allRequiredIds = new Set(selected.flatMap(q => q.recipe.required_materials.map(m => m.id)));
+  const allRequiredIds = new Set(selected.flatMap(q => q.recipe ? q.recipe.required_materials.map(m => m.id) : []));
   const inventoryIds = inventorySet(inventory);
   const missing_materials = [...allRequiredIds]
     .filter(id => !inventoryIds.has(resolveToCanonical(id)))
     .map(id => {
       const mat = selected
-        .flatMap(q => q.recipe.required_materials)
+        .flatMap(q => q.recipe ? q.recipe.required_materials : [])
         .find(m => m.id === id);
       return mat?.common_name ?? id;
     });
