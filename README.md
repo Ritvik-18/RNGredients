@@ -25,9 +25,12 @@ When it came time to sell the vision, Claude's design capabilities were used to 
 
 🎮 **Pitch Deck Presentation:**
 
-<iframe src="RNGredients Pitch.html" width="100%" height="700px" style="border: 2px solid #2a2050; border-radius: 8px; margin-top: 10px;" allowfullscreen>
-  <p>Your browser does not support iframes. <a href="RNGredients Pitch.html">Click here to view the pitch.</a></p>
-</iframe>
+> [!NOTE]
+> GitHub strips out `<iframe>` tags from READMEs for security reasons, and clicking the HTML file directly in the repo will only show the raw code.
+
+**👉 [Click here to view the fully rendered, interactive Pitch Deck!](https://htmlpreview.github.io/?https://github.com/Ritvik-18/RNGredients/blob/master/RNGredients%20Pitch.html) 👈**
+
+*(Powered by HTMLPreview to render the presentation directly in your browser)*
 
 ## Getting Started
 
