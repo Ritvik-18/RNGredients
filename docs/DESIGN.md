@@ -76,7 +76,7 @@ Completeness: 8/10
 
 **Approach B — Full-Stack React + FastAPI.**
 
-The loot table weighting is numerical Python work, not presentation work. Keep it in FastAPI. React's only job is the animation and the UI state. Deploy to Railway (backend + PostgreSQL) + Vercel (frontend) — assume judges need a live URL.
+The loot table weighting is numerical Python work, not presentation work. Keep it in FastAPI. React's only job is the animation and the UI state. Deploy to Vercel (frontend + serverless backend) + Supabase (PostgreSQL) — assume judges need a live URL.
 
 The split also keeps your Spoonacular API key out of the client bundle.
 
@@ -346,7 +346,7 @@ GET /api/player/{player_id}/rerolls
 | Gacha animation (Framer Motion) | 4h |
 | Quest Log screen | 2h |
 | Re-roll mechanic | 1h |
-| Railway + Vercel deploy | 1h |
+| Supabase + Vercel deploy | 1h |
 | Bug fixes + demo rehearsal | 2h |
 | **Total** | **18h** |
 
@@ -390,7 +390,7 @@ Post-hackathon:
 
 ## Distribution Plan
 
-**Hackathon:** Assume judges need a live URL. Railway (free tier) for FastAPI + PostgreSQL. Vercel for React. Manual deploy from `main` before presentation. Add `railway.toml` and `vercel.json` during scaffold step.
+**Hackathon:** Assume judges need a live URL. Supabase (free tier) for PostgreSQL. Vercel for React frontend + FastAPI serverless backend (mangum adapter). Manual deploy from `main` before presentation. Add `vercel.json` during scaffold step. Use Supabase connection pooler (port 6543) for serverless compatibility.
 
 **Post-hackathon:** GitHub repo is the artifact. README with setup instructions. No binary distribution needed — it's a web app.
 

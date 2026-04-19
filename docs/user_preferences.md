@@ -112,11 +112,42 @@ Each meal slot can be tagged:
 
 ### 4.1 Calorie Goal
 
+> Full calculation formulas (BMR, TDEE, target) with code → see [calorie_calc.md](calorie_calc.md) §3
+
 | Method | Description |
 |---|---|
 | **Manual** | User enters exact daily kcal target |
-| **Auto-calculate** | Based on age, gender, height, weight, activity level (Mifflin-St Jeor equation) |
-| **Goal-based** | Lose weight (−500 kcal deficit), Maintain, Gain (+300–500 surplus) |
+| **Auto-calculate** | Based on age, gender, height, weight, activity level (Mifflin-St Jeor equation) → [calorie_calc.md §3.1](calorie_calc.md#31-bmr--basal-metabolic-rate-mifflin-st-jeor) |
+| **Goal-based** | Fitness target adjusts TDEE: Lose (−250 to −750), Maintain (±0), Bulk (+250 to +750) → [calorie_calc.md §2](calorie_calc.md#2-fitness-targets) |
+
+### 4.1.1 Fitness Targets
+
+| Target | Adjustment | Typical Use |
+|---|---|---|
+| Aggressive Cut | TDEE − 750 | Rapid weight loss |
+| Lose Weight | TDEE − 500 | ~1 lb/week loss |
+| Slow Cut | TDEE − 250 | Gentle, sustainable |
+| Maintain | TDEE ± 0 | Stay current |
+| Lean Bulk | TDEE + 250 | Slow muscle gain |
+| Bulk | TDEE + 500 | Muscle building |
+| Aggressive Bulk | TDEE + 750 | Maximum gain |
+
+### 4.1.2 Meal Preference Presets (Quick Setup)
+
+Shortcuts that set diet_profile + macro split together:
+
+| Preset | Diet | Macros (C/P/F) |
+|---|---|---|
+| Balanced | Omnivore | 50/25/25 |
+| High Protein | Omnivore | 30/40/30 |
+| Vegan | Vegan | 55/20/25 |
+| Keto | Keto | 5/25/70 |
+| Diabetic | Diabetic-Friendly | 40/30/30 |
+| Low Fat | Omnivore | 60/25/15 |
+| Mediterranean | Mediterranean | 45/20/35 |
+| Custom | (user picks) | (user sets) |
+
+> Full preset table with all 14 options → see [calorie_calc.md §4](calorie_calc.md#4-meal-preference-presets)
 
 ### 4.2 Macro Targets
 
@@ -285,15 +316,30 @@ If a conflict arises (e.g., user selects Keto + Hindu Vegetarian), the system sh
 
 ## 11. Data Model Update — Player Preferences
 
+> Body stats, BMR/TDEE formulas, fitness targets, and per-meal calorie math → see [calorie_calc.md](calorie_calc.md)
+
 ```json
 {
   "player_id": "uuid",
+
+  "body_stats": {
+    "age": 28,
+    "gender": "male",
+    "height_cm": 175,
+    "weight_kg": 72,
+    "unit_preference": "metric"
+  },
+  "activity_level": "moderately_active",
+  "fitness_target": "lose_weight",
+  "meal_preference_preset": "high_protein",
+
   "diet_profile": "vegetarian",
   "allergies": ["peanuts", "shellfish"],
   "intolerances": ["lactose", "gluten"],
   "custom_exclusions": ["cilantro", "blue cheese"],
   "religious_diet": "halal",
   "health_conditions": ["type_2_diabetes"],
+
   "meal_structure": {
     "preset": "3_meals_1_snack",
     "meals": [
@@ -305,11 +351,15 @@ If a conflict arises (e.g., user selects Keto + Hindu Vegetarian), the system sh
     "fasting_window": null
   },
   "nutrition_goals": {
-    "daily_calories": 2000,
+    "daily_calories": 2102,
     "calc_method": "auto",
-    "macro_preset": "balanced",
-    "macros": { "carbs_pct": 50, "protein_pct": 25, "fat_pct": 25 },
-    "track_micros": ["fiber", "sodium"]
+    "bmr": 1679,
+    "tdee": 2602,
+    "macro_preset": "high_protein",
+    "macros": { "carbs_pct": 30, "protein_pct": 40, "fat_pct": 30 },
+    "macros_grams": { "protein_g": 210, "carbs_g": 158, "fat_g": 70 },
+    "track_micros": ["fiber", "sodium"],
+    "flag_high_gi": false
   },
   "cuisine_preferences": ["Indian", "Mediterranean", "Mexican"],
   "surprise_me": false,

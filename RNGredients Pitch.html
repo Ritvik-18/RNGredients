@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>RNGredients – VC Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #050408; }
+
+.slide {
+  width: 100%; height: 100%;
+  background: #07050e;
+  font-family: 'VT323', monospace;
+  color: #e8e0f0;
+  display: grid;
+  grid-template-rows: 112px 1fr 60px;
+  overflow: hidden;
+  position: relative;
+}
+
+#chars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+/* CRT scanlines */
+.slide::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.13) 3px,
+    rgba(0,0,0,0.13) 4px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Pixel grid background */
+.slide::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(120,80,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,80,255,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 72px;
+  border-bottom: 2px solid #2a1f4a;
+  gap: 28px;
+  background: rgba(10,6,20,0.9);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.logo-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: #e8e0f0;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.logo-name em { font-style: normal; color: #ff8c00; text-shadow: 0 0 12px #ff6b0088; }
+
+.header-sep {
+  width: 2px; height: 32px;
+  background: #2a1f4a;
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+.tagline {
+  font-size: 26px;
+  color: rgba(232,224,240,0.5);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 24px;
+  color: #ff8c00;
+  background: rgba(255,140,0,0.1);
+  border: 2px solid #ff8c00;
+  padding: 8px 20px;
+  image-rendering: pixelated;
+}
+
+.score-text {
+  font-size: 24px;
+  color: #ffe500;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  opacity: 0.7;
+}
+
+/* ── GRID ── */
+.grid {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.cell {
+  padding: 28px 44px;
+  border-right: 2px solid #1a1030;
+  border-bottom: 2px solid #1a1030;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.cell:nth-child(2n) { border-right: none; }
+.cell:nth-child(3), .cell:nth-child(4) { border-bottom: none; }
+
+/* Cell glow tint */
+.cell-1 { background: rgba(255,80,80,0.03); }
+.cell-2 { background: rgba(0,200,120,0.03); }
+.cell-3 { background: rgba(0,180,255,0.03); }
+.cell-4 { background: rgba(255,220,0,0.03); }
+
+.eyebrow {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 24px;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+.cell-1 .eyebrow { color: #ff5050; text-shadow: 0 0 10px #ff505055; }
+.cell-2 .eyebrow { color: #00cc78; text-shadow: 0 0 10px #00cc7855; }
+.cell-3 .eyebrow { color: #00baff; text-shadow: 0 0 10px #00baff55; }
+.cell-4 .eyebrow { color: #ffe500; text-shadow: 0 0 10px #ffe50055; }
+
+.cell-heading {
+  font-size: 30px;
+  color: #e8e0f0;
+  line-height: 1.15;
+  letter-spacing: 0.3px;
+}
+
+.cell-body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 26px;
+  color: rgba(232,224,240,0.7);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.row b { color: #e8e0f0; }
+
+.pixel-bullet {
+  width: 8px; height: 8px;
+  flex-shrink: 0;
+  margin-top: 11px;
+  image-rendering: pixelated;
+}
+.cell-1 .pixel-bullet { background: #ff5050; }
+.cell-2 .pixel-bullet { background: #00cc78; }
+.cell-3 .pixel-bullet { background: #00baff; }
+.cell-4 .pixel-bullet { background: #ffe500; }
+
+/* Scope chips */
+.scope-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+}
+
+.scope-chip {
+  font-size: 24px;
+  color: rgba(232,224,240,0.75);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 14px;
+  line-height: 1.2;
+}
+.scope-chip.hi {
+  color: #00cc78;
+  background: rgba(0,204,120,0.08);
+  border-color: rgba(0,204,120,0.25);
+}
+.scope-chip.market {
+  color: #e8e0f0;
+  background: rgba(0,204,120,0.05);
+  border: 2px solid rgba(0,204,120,0.3);
+  font-size: 24px;
+  font-weight: bold;
+  grid-column: span 2;
+}
+
+/* Impact stats */
+.impact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+}
+
+.istat {
+  background: rgba(255,229,0,0.05);
+  border: 1px solid rgba(255,229,0,0.15);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.istat.usp {
+  grid-column: span 2;
+  background: rgba(255,140,0,0.08);
+  border-color: rgba(255,140,0,0.3);
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+
+.istat-val {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffe500;
+  line-height: 1;
+  text-shadow: 0 0 8px #ffe50044;
+}
+.istat.usp .istat-val { font-size: 32px; color: #ff8c00; }
+.istat-lbl {
+  font-size: 24px;
+  color: rgba(232,224,240,0.5);
+  line-height: 1.2;
+}
+.istat.usp .istat-lbl { font-size: 28px; color: rgba(232,224,240,0.8); }
+
+/* ── FOOTER ── */
+.footer {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 72px;
+  border-top: 2px solid #1a1030;
+  gap: 16px;
+  background: rgba(10,6,20,0.9);
+  overflow: hidden;
+  min-height: 0;
+  height: 60px;
+  max-height: 60px;
+}
+
+.footer-label {
+  font-family: 'VT323', monospace;
+  font-size: 28px;
+  color: rgba(232,224,240,0.25);
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
+
+.f-sep { font-size: 24px; color: rgba(232,224,240,0.2); padding: 0 4px; }
+
+.f-chip {
+  font-size: 24px;
+  color: rgba(232,224,240,0.45);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 4px 16px;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+/* ── PIXEL CHARACTERS (decorative SVG, positioned absolute) ── */
+.char { position: absolute; z-index: 2; pointer-events: none; image-rendering: pixelated; }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+  <section data-label="Pitch">
+    <div class="slide">
+
+      <!-- PIXEL CHARACTERS (rendered by JS below) -->
+      <div id="chars"></div>
+
+      <!-- HEADER -->
+      <div class="header">
+        <div class="logo">
+          <!-- SLOT MACHINE LOGO (pixel art SVG) -->
+          <svg id="slot-logo" width="72" height="72" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;flex-shrink:0">
+            <!-- Machine body -->
+            <rect x="8" y="4" width="48" height="54" rx="0" fill="#2a1060"/>
+            <rect x="8" y="4" width="48" height="54" rx="0" fill="none" stroke="#ff8c00" stroke-width="3"/>
+            <!-- Top decoration -->
+            <rect x="16" y="2" width="32" height="6" fill="#ff8c00"/>
+            <rect x="20" y="0" width="8" height="4" fill="#ffe500"/>
+            <rect x="36" y="0" width="8" height="4" fill="#ffe500"/>
+            <!-- Reel window -->
+            <rect x="12" y="14" width="40" height="22" fill="#050408"/>
+            <rect x="12" y="14" width="40" height="22" fill="none" stroke="#ff8c00" stroke-width="2"/>
+            <!-- Reel dividers -->
+            <rect x="25" y="14" width="2" height="22" fill="#ff8c00" opacity="0.4"/>
+            <rect x="45" y="14" width="2" height="22" fill="#ff8c00" opacity="0.4"/>
+            <!-- Reel: Apple (reel 1) -->
+            <rect x="16" y="20" width="6" height="6" fill="#ff3333"/>
+            <rect x="15" y="19" width="2" height="2" fill="#00aa00"/>
+            <!-- Reel: Corn (reel 2) -->
+            <rect x="29" y="19" width="8" height="8" fill="#ffe500"/>
+            <rect x="31" y="17" width="4" height="4" fill="#00aa00"/>
+            <!-- Reel: Pizza (reel 3) -->
+            <rect x="48" y="20" width="8" height="6" fill="#ff8c00"/>
+            <rect x="50" y="22" width="2" height="2" fill="#cc0000"/>
+            <rect x="54" y="21" width="2" height="2" fill="#cc0000"/>
+            <!-- Button row -->
+            <rect x="14" y="40" width="10" height="8" fill="#ff5050"/>
+            <rect x="31" y="40" width="10" height="8" fill="#ffe500"/>
+            <rect x="48" y="40" width="10" height="8" fill="#00cc78"/>
+            <!-- Coin slot -->
+            <rect x="24" y="50" width="24" height="4" fill="#1a1030"/>
+            <rect x="24" y="50" width="24" height="4" fill="none" stroke="#ff8c00" stroke-width="1"/>
+            <!-- Handle -->
+            <rect x="56" y="18" width="6" height="24" fill="#ff8c00"/>
+            <rect x="56" y="38" width="10" height="10" rx="5" fill="#ff5050"/>
+            <!-- Coin outputs -->
+            <rect x="14" y="56" width="8" height="8" rx="4" fill="#ffe500"/>
+            <rect x="26" y="58" width="8" height="8" rx="4" fill="#ffe500" opacity="0.7"/>
+          </svg>
+          <div class="logo-name"><em>RNG</em>redients</div>
+        </div>
+        <div class="header-sep"></div>
+        <div class="tagline">Making Home Cooking Effortless</div>
+        <div class="header-right">
+          <div class="score-text">HI-SCORE</div>
+          <div class="badge">SEED ROUND</div>
+        </div>
+      </div>
+
+      <!-- GRID -->
+      <div class="grid">
+
+        <!-- PROBLEM STATEMENT -->
+        <div class="cell cell-1">
+          <div class="eyebrow">PROBLEM STATEMENT</div>
+          <div class="cell-heading">Cooking is broken</div>
+          <div class="cell-body">
+            <div class="row"><div class="pixel-bullet"></div><span><b>DECISION FATIGUE</b></span></div>
+            <div class="row"><div class="pixel-bullet"></div><span><b>FOOD WASTE</b></span></div>
+            <div class="row"><div class="pixel-bullet"></div><span><b>NO WORKFLOW</b></span></div>
+          </div>
+        </div>
+
+        <!-- SCOPE -->
+        <div class="cell cell-2">
+          <div class="eyebrow">SCOPE</div>
+          <div class="cell-heading">Market + Solution</div>
+          <div class="scope-grid">
+            <div class="scope-chip market">🌍 Urban households · Health-conscious · Families</div>
+            <div class="scope-chip hi">Smart Suggestions</div>
+            <div class="scope-chip hi">RNG Gamification</div>
+            <div class="scope-chip">Expiry Tracking</div>
+            <div class="scope-chip">Batch Cooking</div>
+            <div class="scope-chip">AI Personalization ✦</div>
+            <div class="scope-chip">Social Sharing ✦</div>
+          </div>
+        </div>
+
+        <!-- DISCIPLINE -->
+        <div class="cell cell-3">
+          <div class="eyebrow">DISCIPLINE</div>
+          <div class="cell-heading">Market Position</div>
+          <!-- CSS Market Map -->
+          <div style="flex:1;min-height:0;position:relative;overflow:hidden;margin-top:8px;">
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+              <!-- Y label -->
+              <div style="position:absolute;left:0;top:50%;transform:translateY(-50%) rotate(-90deg);transform-origin:center;font-size:24px;color:rgba(0,186,255,0.35);white-space:nowrap;letter-spacing:2px;">GAMIFICATION ↑</div>
+              <!-- map area -->
+              <div style="position:absolute;left:60px;right:8px;top:8px;bottom:36px;border-left:2px solid #2a2050;border-bottom:2px solid #2a2050;">
+                <!-- gap zone -->
+                <div style="position:absolute;right:2%;top:5%;width:38%;height:45%;background:rgba(0,186,255,0.06);border:1px dashed rgba(0,186,255,0.2);">
+                  <div style="font-size:24px;color:rgba(0,186,255,0.5);padding:6px 10px;white-space:nowrap;">THE GAP ZONE</div>
+                </div>
+                <!-- NoWaste -->
+                <div style="position:absolute;left:8%;bottom:12%;display:flex;flex-direction:column;gap:2px;align-items:flex-start;">
+                  <div style="width:10px;height:10px;background:#ff5050;"></div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.65);white-space:nowrap;">NOWASTE</div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.3);white-space:nowrap;">no meal plan</div>
+                </div>
+                <!-- Mealime -->
+                <div style="position:absolute;left:35%;bottom:28%;display:flex;flex-direction:column;gap:2px;align-items:flex-start;">
+                  <div style="width:10px;height:10px;background:#ff5050;"></div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.65);white-space:nowrap;">MEALIME</div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.3);white-space:nowrap;">no gamification</div>
+                </div>
+                <!-- Yummly -->
+                <div style="position:absolute;left:60%;bottom:8%;display:flex;flex-direction:column;gap:2px;align-items:flex-start;">
+                  <div style="width:10px;height:10px;background:#ff5050;"></div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.65);white-space:nowrap;">YUMMLY</div>
+                  <div style="font-size:24px;color:rgba(232,224,240,0.3);white-space:nowrap;">no waste</div>
+                </div>
+                <!-- RNGredients star -->
+                <div style="position:absolute;right:6%;top:12%;display:flex;flex-direction:column;align-items:center;gap:4px;">
+                  <div style="font-size:32px;line-height:1;">★</div>
+                  <div style="font-size:26px;color:#00baff;white-space:nowrap;font-weight:bold;">RNGredients</div>
+                </div>
+              </div>
+              <!-- X label -->
+              <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:24px;color:rgba(0,186,255,0.35);white-space:nowrap;letter-spacing:2px;">MEAL PLANNING →</div>
+            </div>
+          </div>
+        
+        </div>
+
+        <!-- IMPACT & USEFULNESS -->
+        <div class="cell cell-4">
+          <div class="eyebrow">IMPACT &amp; USEFULNESS</div>
+          <div class="cell-heading">Win conditions</div>
+          <div class="impact-grid">
+            <div class="istat">
+              <div class="istat-val">↓ WASTE</div>
+              <div class="istat-lbl">Less food binned</div>
+            </div>
+            <div class="istat">
+              <div class="istat-val">↑ SAVE</div>
+              <div class="istat-lbl">Fewer deliveries</div>
+            </div>
+            <div class="istat">
+              <div class="istat-val">↑ COOK</div>
+              <div class="istat-lbl">Daily habit formed</div>
+            </div>
+            <div class="istat">
+              <div class="istat-val">↑ TIME</div>
+              <div class="istat-lbl">Faster prep</div>
+            </div>
+            <div class="istat usp">
+              <div class="istat-val">USP</div>
+              <div class="istat-lbl" style="white-space:nowrap;">FIRST UNIFIED APP</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="footer">
+        <div class="footer-label">PLAYERS</div>
+        <span class="f-sep">|</span>
+        <div class="f-chip">URBAN PROS</div>
+        <span class="f-sep">|</span>
+        <div class="f-chip">HEALTH FOCUSED</div>
+        <span class="f-sep">|</span>
+        <div class="f-chip">FAMILIES</div>
+        <span class="f-sep">|</span>
+        <div class="f-chip">BEGINNERS</div>
+      </div>
+
+    </div>
+  </section>
+</deck-stage>
+
+<script>
+// Pixel art renderer — each char is a 2D array of color indices
+const PAL = {
+  '.': null,
+  'R': '#ff3333', 'r': '#cc2222',
+  'W': '#ffffff', 'w': '#ddddff',
+  'T': '#cc9955', 't': '#aa7733',
+  'G': '#33cc55', 'g': '#228833',
+  'B': '#4444ff', 'b': '#2222bb',
+  'Y': '#ffee00', 'y': '#ccbb00',
+  'S': '#aaaacc', 's': '#888899',
+  'K': '#221133', 'k': '#110022',
+  'O': '#ff8800', 'o': '#cc6600',
+  'P': '#ff44aa', 'p': '#cc2288',
+  'C': '#00ccff', 'c': '#0099cc',
+  'N': '#332255',
+};
+
+function renderPixelChar(rows, scale, x, y) {
+  const h = rows.length, w = rows[0].length;
+  let svg = `<svg class="char" style="left:${x}px;top:${y}px;width:${w*scale}px;height:${h*scale}px" viewBox="0 0 ${w*scale} ${h*scale}" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">`;
+  rows.forEach((row, ri) => {
+    [...row].forEach((c, ci) => {
+      const col = PAL[c];
+      if (col) svg += `<rect x="${ci*scale}" y="${ri*scale}" width="${scale}" height="${scale}" fill="${col}"/>`;
+    });
+  });
+  svg += '</svg>';
+  return svg;
+}
+
+const MUSHROOM = [
+  '..RRRR..',
+  '.RRRRRR.',
+  'RRWRRWRR',
+  'RRRRRRRR',
+  '.RRRRRR.',
+  '.TTTTTT.',
+  '.T.TT.T.',
+  '..TTTT..',
+];
+
+const GHOST = [
+  '.CCCCC.',
+  'CCCCCCC',
+  'CwCwCCC',
+  'CCCCCCC',
+  'CCCCCCC',
+  'C.C.C.C',
+];
+
+const COIN = [
+  '.YYY.',
+  'YYYYY',
+  'YyYYY',
+  'YYYYY',
+  '.YYY.',
+];
+
+const CARROT = [
+  '..GGG.',
+  '.GGGGG',
+  '..OOO.',
+  '.OOOOO',
+  'OOOOO.',
+  '.OOO..',
+  '..O...',
+];
+
+const STAR = [
+  '..Y..',
+  'YYYYY',
+  '.YYY.',
+  'Y.Y.Y',
+  '.....',
+];
+
+const CHEF = [
+  '.WWW.',
+  'WWWWW',
+  '.WwW.',
+  '.TTT.',
+  'TTTTT',
+  '.T.T.',
+];
+
+const PIZZA = [
+  '..OOO..',
+  '.OROOO.',
+  'OOROOOO',
+  'OOOOROO',
+  '.OOOOO.',
+  '..OOO..',
+];
+
+const chars = document.getElementById('chars');
+const items = [
+  // Header corners (y 20-80)
+  [COIN,     7,  30,    24],
+  [STAR,     6,  1860,  28],
+  [MUSHROOM, 6,  1720,  20],
+  // Footer corners (y 1025-1060)
+  [GHOST,    6,  440,   1028],
+  [PIZZA,    6,  1860,  1028],
+  [CARROT,   5,  940,   1030],
+  // Between cells — cell border midpoints (safely away from eyebrows)
+  [COIN,     6,  950,   500],
+  [STAR,     5,  1865,  535],
+  [CHEF,     6,  26,    535],
+];
+
+items.forEach(([rows, scale, x, y]) => {
+  chars.innerHTML += renderPixelChar(rows, scale, x, y);
+});
+</script>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="80" fill="#07050e"/>
+    <rect x="8" y="6" width="104" height="12" rx="0" fill="#150c2a"/>
+    <rect x="12" y="9" width="20" height="6" fill="#ff8c00"/>
+    <rect x="8" y="22" width="50" height="26" fill="#0f0a1e"/>
+    <rect x="62" y="22" width="50" height="26" fill="#0f0a1e"/>
+    <rect x="8" y="52" width="50" height="22" fill="#0f0a1e"/>
+    <rect x="62" y="52" width="50" height="22" fill="#0f0a1e"/>
+    <rect x="8" y="22" width="50" height="26" fill="none" stroke="#ff505033" stroke-width="1"/>
+    <rect x="62" y="22" width="50" height="26" fill="none" stroke="#00cc7833" stroke-width="1"/>
+  </svg>
+</template>
+
+</body>
+</html>

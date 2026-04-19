@@ -1,5 +1,14 @@
 # RNGredients: Gamified Meal Prep & Inventory Management — Research & Structure
 
+> **Core architecture doc.** Data models, algorithm, tech stack, build sprints.
+> Related docs:
+> - [user_preferences.md](user_preferences.md) — Diets, allergies, meal counts, religion, health conditions
+> - [ingredients.md](ingredients.md) — Ingredient categories, pantry staples, nutrition params, units, normalization, substitutions
+> - [appliances.md](appliances.md) — Kitchen equipment, cooking method matrix, substitution logic
+> - [calorie_calc.md](calorie_calc.md) — BMR/TDEE formulas, fitness targets, meal presets, daily progress tracking
+> - [tree.md](tree.md) — Feature tree, UI specs, API endpoints
+> - [themes.md](themes.md) — Retro game color palettes
+
 ---
 
 ## 1. Problem Statement & The "Game" Solution
